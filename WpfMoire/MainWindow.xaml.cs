@@ -19,6 +19,9 @@ namespace WpfMoire
     /// </summary>
     public partial class MainWindow : Window
     {
+        public int w = 200;
+        public int h = 200;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,9 +33,10 @@ namespace WpfMoire
             TryAddNewShape(s);
         }
 
-        private void AddNewShape(string s)
+        public delegate double PatternMaker(int x, int y,int w,int h, ref Random rand);
+
+        private void AddNewShapeLight(PatternMaker f)
         {
-            int w = 200, h = 200;
             DrawingBrush db = new DrawingBrush();
 
             var dv = new DrawingVisual();
@@ -43,7 +47,7 @@ namespace WpfMoire
                 for (int y = 0; y < h; y++)
                 {
                     //double d = SimpleMathEval.EvalXY(s, x, y,ref rd) * 255;
-                    byte alpha = (byte)Math.Floor(SimpleMathEval.EvalXY(s, x, y,ref rd) * 255);
+                    byte alpha = (byte)Math.Floor(f(x, y,w,h,ref rd)*255);
                     dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(alpha, 0, 0, 0)), null, new Rect(new Point(x, y), new Point(x + 1, y + 1)));
                     //System.Diagnostics.Debug.WriteLine(x + "," + y + ":" + Math.Floor(SimpleMathEval.EvalXY(s, x, y) * 255));
                 }
@@ -73,6 +77,15 @@ namespace WpfMoire
             b.MouseDown += new MouseButtonEventHandler(b_MouseDown);
 
             PictureCanvas.Children.Add(b);
+        }
+
+        private void AddNewShape(string s)
+        {
+            PatternMaker f= delegate(int x, int y, int w, int h, ref Random rand)
+            {
+                return SimpleMathEval.EvalXY(s, x, y, ref rand);
+            };
+            AddNewShapeLight(f);
         }
 
         private Point p;
@@ -138,7 +151,113 @@ namespace WpfMoire
         {
             string s = (string)((MenuItem)sender).Tag;
             FunctionTextBox.Text = s;
-            TryAddNewShape(s);
+
+            switch (s)
+            {
+                case "(x*y)%2==0":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (x * y) % 2 == 0 ? 1 : 0;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "(x*y)%5==0?1:0":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (x * y) % 5 == 0 ? 1 : 0;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "(x+y)%2==0":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (x * y) % 2 == 0 ? 1 : 0;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "(int(x/5)+int(y/5))%2==0?1:0":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (Math.Floor(x/5.0) + Math.Floor(y / 5.0)) % 2 == 0 ? 1 : 0;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "sin(x * 0.628) / 2 + 0.5":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Sin(x * Math.PI/5.0) /2.0+0.5;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "sin(y * 0.628) / 2 + 0.5":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Sin(y * Math.PI / 5.0) / 2.0 + 0.5;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "(sin(x*0.628)+sin(y*0.628))/4+0.5":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (Math.Sin(x * Math.PI / 5.0)+ Math.Sin(y * Math.PI / 5.0)) / 4.0 + 0.5;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "log(x)":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Log(x);
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "log(x*y)":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Log(x*y);
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "x*y":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return x * y;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "rand":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return rand.NextDouble();
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                default:
+                    TryAddNewShape(s);
+                    break;
+            }
+
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
@@ -146,7 +265,6 @@ namespace WpfMoire
             MessageBox.Show("使い方\n下の数式にxとyを含む式を書いて「追加」ボタンを押して下さい。\n使える数式は四則演算、剰余(%)、三角関数・log・log10・Floorです。\n関数内で括弧は使えない点は気を付けてください。\n挿入メニューからサンプルを追加できます。\n大きさは200x200なので注意し下さい。");
             MessageBox.Show("移動など\nドラッグで移動できます。\n左クリック+マウスホイール移動で回転、\n右クリック+マウスホイール移動で拡大縮小できます。");
         }
-
 
     }
 
