@@ -192,7 +192,7 @@ namespace WpfMoire
                         AddNewShapeLight(f);
                     }
                     break;
-                case "sin(x * 0.628) / 2 + 0.5":
+                case "sin(x*0.628)/2+0.5":
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
@@ -201,7 +201,7 @@ namespace WpfMoire
                         AddNewShapeLight(f);
                     }
                     break;
-                case "sin(y * 0.628) / 2 + 0.5":
+                case "sin(y*0.628)/2+0.5":
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
