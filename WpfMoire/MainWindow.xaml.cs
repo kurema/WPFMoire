@@ -33,7 +33,7 @@ namespace WpfMoire
             TryAddNewShape(s);
         }
 
-        public delegate double PatternMaker(int x, int y,int w,int h, ref Random rand);
+        public delegate double PatternMaker(int x, int y, int w, int h, ref Random rand);
 
         private void AddNewShapeLight(PatternMaker f)
         {
@@ -46,14 +46,12 @@ namespace WpfMoire
             {
                 for (int y = 0; y < h; y++)
                 {
-                    //double d = SimpleMathEval.EvalXY(s, x, y,ref rd) * 255;
-                    byte alpha = (byte)Math.Floor(f(x, y,w,h,ref rd)*255);
+                    byte alpha = (byte)Math.Floor(f(x, y, w, h, ref rd) * 255);
                     dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(alpha, 0, 0, 0)), null, new Rect(new Point(x, y), new Point(x + 1, y + 1)));
-                    //System.Diagnostics.Debug.WriteLine(x + "," + y + ":" + Math.Floor(SimpleMathEval.EvalXY(s, x, y) * 255));
                 }
             }
             dc.Close();
-            var bitmap = new RenderTargetBitmap(200, 200, 96, 96, PixelFormats.Pbgra32);
+            var bitmap = new RenderTargetBitmap(w, h, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(dv);	// 描画結果を書き込む
             var brush = new ImageBrush(bitmap);	// ブラシの作成
             brush.ViewportUnits = BrushMappingMode.RelativeToBoundingBox;
@@ -65,9 +63,11 @@ namespace WpfMoire
             b.Width = w;
             b.Height = h;
             b.BorderBrush = Brushes.DarkGray;
-            b.BorderThickness = new Thickness(1);
+            b.BorderThickness = new Thickness(0);
             b.Tag = new double[] { 0.0, 1.0 };
             b.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            RenderOptions.SetBitmapScalingMode(b, BitmapScalingMode.NearestNeighbor);//これを消すと描画モードが変わります。
 
             Random r = new Random();
 
@@ -81,10 +81,10 @@ namespace WpfMoire
 
         private void AddNewShape(string s)
         {
-            PatternMaker f= delegate(int x, int y, int w, int h, ref Random rand)
-            {
-                return SimpleMathEval.EvalXY(s, x, y, ref rand);
-            };
+            PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+             {
+                 return SimpleMathEval.EvalXY(s, x, y, ref rand);
+             };
             AddNewShapeLight(f);
         }
 
@@ -92,18 +92,20 @@ namespace WpfMoire
 
         void b_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            p=e.GetPosition(PictureCanvas);
+            p = e.GetPosition(PictureCanvas);
             ((Border)sender).MouseMove += new MouseEventHandler(b_MouseMove);
             ((Border)sender).MouseWheel += new MouseWheelEventHandler(MainWindow_MouseWheel);
-            ((Border)sender).MouseUp += ((a, b) => {
+            ((Border)sender).MouseUp += ((a, b) =>
+            {
                 ((Border)sender).MouseMove -= new MouseEventHandler(b_MouseMove);
-                ((Border)sender).MouseWheel -= new MouseWheelEventHandler(MainWindow_MouseWheel); 
+                ((Border)sender).MouseWheel -= new MouseWheelEventHandler(MainWindow_MouseWheel);
             });
             ((Border)sender).MouseLeave += ((a, b) =>
             {
                 ((Border)sender).MouseMove -= new MouseEventHandler(b_MouseMove);
                 ((Border)sender).MouseWheel -= new MouseWheelEventHandler(MainWindow_MouseWheel);
             });
+
         }
 
         void MainWindow_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -112,12 +114,12 @@ namespace WpfMoire
             double d = ((double[])((Border)sender).Tag)[1];
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                f += (e.Delta)*0.2;
+                f += (e.Delta) * 0.2;
                 ((double[])((Border)sender).Tag)[0] = f;
             }
             else
             {
-                d *= (1 + e.Delta*0.002);
+                d *= (1 + e.Delta * 0.002);
                 ((double[])((Border)sender).Tag)[1] = d;
             }
             ScaleTransform st = new ScaleTransform(d, d);
@@ -185,7 +187,7 @@ namespace WpfMoire
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
-                            return (Math.Floor(x/5.0) + Math.Floor(y / 5.0)) % 2 == 0 ? 1 : 0;
+                            return (Math.Floor(x / 5.0) + Math.Floor(y / 5.0)) % 2 == 0 ? 1 : 0;
                         };
                         AddNewShapeLight(f);
                     }
@@ -194,7 +196,7 @@ namespace WpfMoire
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
-                            return Math.Sin(x * Math.PI/5.0) /2.0+0.5;
+                            return Math.Sin(x * Math.PI / 5.0) / 2.0 + 0.5;
                         };
                         AddNewShapeLight(f);
                     }
@@ -212,7 +214,7 @@ namespace WpfMoire
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
-                            return (Math.Sin(x * Math.PI / 5.0)+ Math.Sin(y * Math.PI / 5.0)) / 4.0 + 0.5;
+                            return (Math.Sin(x * Math.PI / 5.0) + Math.Sin(y * Math.PI / 5.0)) / 4.0 + 0.5;
                         };
                         AddNewShapeLight(f);
                     }
@@ -230,7 +232,7 @@ namespace WpfMoire
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
-                            return Math.Log(x*y);
+                            return Math.Log(x * y);
                         };
                         AddNewShapeLight(f);
                     }
@@ -266,6 +268,13 @@ namespace WpfMoire
             MessageBox.Show("移動など\nドラッグで移動できます。\n左クリック+マウスホイール移動で回転、\n右クリック+マウスホイール移動で拡大縮小できます。");
         }
 
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            string s = (string)((MenuItem)sender).Tag;
+            var ss = s.Split('*');
+            w = int.Parse(ss[0]);
+            h = int.Parse(ss[1]);
+        }
     }
 
     public static class SimpleMathEval

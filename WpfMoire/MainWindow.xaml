@@ -27,6 +27,13 @@
                 <Separator />
                 <MenuItem Header="ランダムノイズ" Click="MenuItem_Click" Tag="rand"/>
             </MenuItem>
+            <MenuItem Header="サイズ(_S)">
+                <MenuItem Header="大(800*800)" Click="MenuItem_Click_2" Tag="800*800"/>
+                <MenuItem Header="中(500*500)" Click="MenuItem_Click_2" Tag="500*500"/>
+                <MenuItem Header="小(200*200)" Click="MenuItem_Click_2" Tag="200*200"/>
+                <Separator />
+                <MenuItem Header="横長(640*480)" Click="MenuItem_Click_2" Tag="640*480"/>
+            </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem Header="説明を表示" Click="MenuItem_Click_1"/>
             </MenuItem>
