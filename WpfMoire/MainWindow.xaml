@@ -17,13 +17,18 @@
                 <MenuItem Header="最小市松模様" Click="MenuItem_Click" Tag="(x+y)%2==0"/>
                 <MenuItem Header="5x5市松模様" Click="MenuItem_Click" Tag="(int(x/5)+int(y/5))%2==0?1:0"/>
                 <Separator />
-                <MenuItem Header="5x5縦縞" Click="MenuItem_Click" Tag="sin(x*0.628)/2+0.5"/>
-                <MenuItem Header="5x5横縞" Click="MenuItem_Click" Tag="sin(y*0.628)/2+0.5"/>
+                <MenuItem Header="5縦縞" Click="MenuItem_Click" Tag="sin(x*0.628)/2+0.5"/>
+                <MenuItem Header="5横縞" Click="MenuItem_Click" Tag="sin(y*0.628)/2+0.5"/>
                 <MenuItem Header="5x5縞" Click="MenuItem_Click" Tag="(sin(x*0.628)+sin(y*0.628))/4+0.5"/>
                 <Separator />
                 <MenuItem Header="log1" Click="MenuItem_Click" Tag="log(x)"/>
                 <MenuItem Header="log2" Click="MenuItem_Click" Tag="log(x*y)"/>
                 <MenuItem Header="x*y" Click="MenuItem_Click" Tag="x*y"/>
+                <Separator />
+                <MenuItem Header="円周" Click="MenuItem_Click" Tag="ensyu1"/>
+                <MenuItem Header="円周(逆位相)" Click="MenuItem_Click" Tag="ensyu2"/>
+                <MenuItem Header="円周縞" Click="MenuItem_Click" Tag="ensyu3"/>
+                <MenuItem Header="円周縞(逆位相)" Click="MenuItem_Click" Tag="ensyu4"/>
                 <Separator />
                 <MenuItem Header="ランダムノイズ" Click="MenuItem_Click" Tag="rand"/>
             </MenuItem>
@@ -34,6 +39,12 @@
                 <Separator />
                 <MenuItem Header="横長(640*480)" Click="MenuItem_Click_2" Tag="640*480"/>
             </MenuItem>
+            <!--
+            <MenuItem Header="キャンバス(_C)">
+                <MenuItem Header="保存(_S)" Click="MenuItem_Click_3"/>
+                <MenuItem Header="クリア(_C)" Click="MenuItem_Click_3"/>
+            </MenuItem>
+            -->
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem Header="説明を表示" Click="MenuItem_Click_1"/>
             </MenuItem>

@@ -83,7 +83,7 @@ namespace WpfMoire
         {
             PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
              {
-                 return SimpleMathEval.EvalXY(s, x, y, ref rand);
+                 return SimpleMathEval.EvalXY(s, x, y,w,h, ref rand);
              };
             AddNewShapeLight(f);
         }
@@ -255,6 +255,42 @@ namespace WpfMoire
                         AddNewShapeLight(f);
                     }
                     break;
+                case "ensyu1":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (Math.Sqrt(Math.Pow(w / 2.0 - x, 2) + Math.Pow(h / 2.0 - y, 2)) / 3.0) % 2 > 1 ? 1 : 0;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "ensyu2":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return (Math.Sqrt(Math.Pow(w / 2.0 - x, 2) + Math.Pow(h / 2.0 - y, 2)) / 3.0) % 2 > 1 ? 0 : 1;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "ensyu3":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Sin(Math.Sqrt(Math.Pow(w / 2.0 - x, 2) + Math.Pow(h / 2.0 - y, 2)) / 3.0*Math.PI)*0.5+0.5 ;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
+                case "ensyu4":
+                    {
+                        PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
+                        {
+                            return Math.Cos(Math.Sqrt(Math.Pow(w / 2.0 - x, 2) + Math.Pow(h / 2.0 - y, 2)) / 3.0 * Math.PI) * 0.5 + 0.5;
+                        };
+                        AddNewShapeLight(f);
+                    }
+                    break;
                 default:
                     TryAddNewShape(s);
                     break;
@@ -275,11 +311,16 @@ namespace WpfMoire
             w = int.Parse(ss[0]);
             h = int.Parse(ss[1]);
         }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     public static class SimpleMathEval
     {
-        public static double EvalXY(string s, int x, int y,ref Random rd)
+        public static double EvalXY(string s, int x, int y,int w,int h,ref Random rd)
         {
             while(System.Text.RegularExpressions.Regex.IsMatch(s, @"rand", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
             {
@@ -287,7 +328,7 @@ namespace WpfMoire
                 System.Text.RegularExpressions.Match m = r.Match(s);
                 s=r.Replace(s, rd.NextDouble().ToString(), 1);
             }
-            return Eval(s.Replace("X", x.ToString()).Replace("x", x.ToString()).Replace("Y", y.ToString()).Replace("y", y.ToString()));
+            return Eval(s.Replace("X", x.ToString()).Replace("x", x.ToString()).Replace("Y", y.ToString()).Replace("y", y.ToString()).Replace("W", w.ToString()).Replace("w", w.ToString()).Replace("H", h.ToString()).Replace("h", h.ToString()));
         }
 
         public static double Eval(string s)
@@ -334,6 +375,12 @@ namespace WpfMoire
                     System.Text.RegularExpressions.Match m = r.Match(s);
                     return Eval(r.Replace(s, Math.Log10(Eval(m.Groups[1].Value)).ToString(), 1));
                 }
+                else if (System.Text.RegularExpressions.Regex.IsMatch(s, @"sqrt\(.+?\)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(@"sqrt\((.+?)\)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    System.Text.RegularExpressions.Match m = r.Match(s);
+                    return Eval(r.Replace(s, Math.Sqrt(Eval(m.Groups[1].Value)).ToString(), 1));
+                }
                 else if (System.Text.RegularExpressions.Regex.IsMatch(s, @"floor\(.+?\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                 {
                     System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(@"floor\((.+?)\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
@@ -364,6 +411,12 @@ namespace WpfMoire
                     {
                         return Eval(r.Replace(s, Math.Sin(Eval(m.Groups[2].Value)).ToString()));
                     }
+                }
+                else if (System.Text.RegularExpressions.Regex.IsMatch(s, @"^.+?\^.+$"))
+                {
+                    System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(@"^(.+?)\^(.+)$");
+                    System.Text.RegularExpressions.Match m = r.Match(s);
+                    return Math.Pow( Eval(m.Groups[1].Value),  Eval(m.Groups[2].Value) );
                 }
                 else if (System.Text.RegularExpressions.Regex.IsMatch(s, @"^.+?\=\=?.+$"))
                 {
