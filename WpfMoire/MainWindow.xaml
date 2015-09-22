@@ -38,6 +38,7 @@
                 <MenuItem Header="小(200*200)" Click="MenuItem_Click_2" Tag="200*200"/>
                 <Separator />
                 <MenuItem Header="横長(640*480)" Click="MenuItem_Click_2" Tag="640*480"/>
+                <MenuItem Header="フルHD(1920*1080)" Click="MenuItem_Click_2" Tag="1920*1080"/>
             </MenuItem>
             <!--
             <MenuItem Header="キャンバス(_C)">

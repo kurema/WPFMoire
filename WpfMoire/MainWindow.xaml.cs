@@ -71,8 +71,8 @@ namespace WpfMoire
 
             Random r = new Random();
 
-            Canvas.SetLeft(b, r.Next((int)PictureCanvas.ActualWidth - w));
-            Canvas.SetTop(b, r.Next((int)PictureCanvas.ActualHeight - h));
+            Canvas.SetLeft(b, r.Next(Math.Max((int)PictureCanvas.ActualWidth - w,0)));
+            Canvas.SetTop(b, r.Next(Math.Max((int)PictureCanvas.ActualHeight - h,0)));
 
             b.MouseDown += new MouseButtonEventHandler(b_MouseDown);
 
@@ -178,7 +178,7 @@ namespace WpfMoire
                     {
                         PatternMaker f = delegate (int x, int y, int w, int h, ref Random rand)
                         {
-                            return (x * y) % 2 == 0 ? 1 : 0;
+                            return (x + y) % 2 == 0 ? 1 : 0;
                         };
                         AddNewShapeLight(f);
                     }
